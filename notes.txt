@@ -1,0 +1,28 @@
+// si pas populate ! 
+// book.authors = ['691c6...', '691d...']
+const names = await Promise.all(
+  book.authors.map(id =>
+    fetch(`/authors/${id}`).then(r => {
+      if (!r.ok) throw new Error('author fetch failed');
+      return r.json();
+    }).then(a => a.name)
+  )
+);
+book.authors = names; // replace ids with names
+
+-----------
+Better: batch on the server — add an endpoint that accepts multiple ids and returns the authors in one query:
+// GET /authors?ids=691c6...,691d...
+// Server (Express + Mongoose)
+router.get('/authors', async (req, res) => {
+  const ids = (req.query.ids || '').split(',').filter(Boolean);
+  const authors = await Author.find({ _id: { $in: ids } }, 'name'); // only name field
+  res.json(authors);
+});
+
+Client side:
+const ids = book.authors.join(',');
+const resp = await fetch(`/authors?ids=${encodeURIComponent(ids)}`);
+const authors = await resp.json();
+const map = new Map(authors.map(a => [a._id, a.name]));
+book.authors = book.authors.map(id => map.get(id) || null);

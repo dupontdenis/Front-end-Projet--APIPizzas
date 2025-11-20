@@ -1,0 +1,147 @@
+# API PizzaTopping - REST Client requests
+
+# Usage notes:
+# - Start MongoDB and run `node app.js` in the project root.
+# - Use the REST Client extension (or similar) to run the requests in this file.
+# - Replace {{PIZZA_ID}} and {{TOPPING_ID}} placeholders with actual IDs returned by the API.
+
+
+### Seeded data
+
+The `npm run seed` script inserts sample pizzas into the database.
+
+After running the seeder, get the actual object IDs (you'll need them for topping creation):
+
+GET http://localhost:3000/pizzas
+
+Copy the `_id` value for the pizza you want to reference and use it in the requests below.
+
+### Example: create a topping using a seeded pizza (replace placeholder)
+POST http://localhost:3000/toppings
+Content-Type: application/json
+
+{
+  "title": "Extra Cheese (Seeded)",
+  "pizzas": ["{{MARGHERITA_ID}}"]
+}
+
+### Example: create a topping with multiple seeded pizzas
+POST http://localhost:3000/toppings
+Content-Type: application/json
+
+{
+  "title": "Mixed Topping (Seeded)",
+  "pizzas": ["{{PEPPERONI_ID}}", "{{MARGHERITA_ID}}"]
+}
+
+
+### Create a pizza
+POST http://localhost:3000/pizzas
+Content-Type: application/json
+
+{
+  "name": "Example Pizza",
+  "dateOfCreation": "2021-04-12",
+  "discontinued": null
+}
+
+### List pizzas
+GET http://localhost:3000/pizzas
+
+### List pizzas (aggregation — totals computed in DB)
+GET http://localhost:3000/pizzas/aggregate
+
+### Get a pizza by ID
+GET http://localhost:3000/pizzas/{{PIZZA_ID}}
+
+### Update a pizza
+PUT http://localhost:3000/pizzas/{{PIZZA_ID}}
+Content-Type: application/json
+
+{
+  "name": "Example Pizza Updated",
+  "dateOfCreation": "2021-04-12",
+  "discontinued": null
+}
+
+### Delete a pizza
+DELETE http://localhost:3000/pizzas/{{PIZZA_ID}}
+
+### Create a topping (use an existing pizza id in the pizzas array)
+POST http://localhost:3000/toppings
+Content-Type: application/json
+
+{
+  "title": "Example Topping",
+  "pizzas": ["{{PIZZA_ID}}"]
+}
+
+### List toppings (pizzas populated)
+GET http://localhost:3000/toppings
+
+### Get a topping by ID
+GET http://localhost:3000/toppings/{{TOPPING_ID}}
+
+### Update a topping
+PUT http://localhost:3000/toppings/{{TOPPING_ID}}
+Content-Type: application/json
+
+{
+  "title": "Example Topping (Updated)",
+  "pizzas": ["{{PIZZA_ID}}"]
+}
+
+### Delete a topping
+DELETE http://localhost:3000/toppings/{{TOPPING_ID}}
+
+### Quick Tests
+
+# Note: replace placeholders (`{{PIZZA_ID}}`, `{{TOPPING_ID}}`) with real IDs from `GET /pizzas` after running `npm run seed`.
+
+### 1) List all pizzas (verify seeder)
+GET http://localhost:3000/pizzas
+
+### 2) List all toppings
+GET http://localhost:3000/toppings
+
+### 3) Get toppings by pizza (query param)
+GET http://localhost:3000/toppings?pizza={{MARGHERITA_ID}}
+
+### 4) Get toppings by pizza (pizza sub-route)
+GET http://localhost:3000/pizzas/{{MARGHERITA_ID}}/toppings
+
+### 5) Get pizzas for a topping
+GET http://localhost:3000/toppings/{{TOPPING_ID}}/pizzas
+
+### 6) Create a pizza (test create)
+POST http://localhost:3000/pizzas
+Content-Type: application/json
+
+{
+  "name": "Test Pizza",
+  "dateOfCreation": "1990-01-01",
+  "discontinued": null
+}
+
+### 7) Create a topping using an existing pizza
+POST http://localhost:3000/toppings
+Content-Type: application/json
+
+{
+  "title": "Test Topping",
+  "pizzas": ["{{PIZZA_ID}}"]
+}
+
+### 8) Update the test topping (replace TOPPING_ID)
+PUT http://localhost:3000/toppings/{{TOPPING_ID}}
+Content-Type: application/json
+
+{
+  "title": "Test Topping (Updated)",
+  "pizzas": ["{{PIZZA_ID}}"]
+}
+
+### 9) Cleanup: delete created topping and pizza (replace IDs)
+DELETE http://localhost:3000/toppings/{{TOPPING_ID}}
+DELETE http://localhost:3000/pizzas/{{PIZZA_ID}}
+
