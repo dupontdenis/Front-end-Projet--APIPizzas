@@ -1,6 +1,6 @@
 {
   "type": "module",
-  "name": "apibookauthor",
+  "name": "apiPizzas",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
